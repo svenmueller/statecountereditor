@@ -38,7 +38,7 @@ class StateCounterHelper:
             count_group = str(count.group(1))
             count_resource = count_group.split(".")[0]
             count_name = count_group.split(".")[1]
-            count_value = count_group.split(".")[2]
+            count_value = int(count_group.split(".")[2])
             resource_name = ".".join(count_group.split(".")[0:2])
 
             if resource_name in self.countable_dict:
