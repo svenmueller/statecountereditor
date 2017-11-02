@@ -43,7 +43,6 @@ class StateCounterHelper:
 
             if resource_name in self.countable_dict:
                 self.countable_dict[resource_name]["Countable"].push(count_value)
-
             else:
                 countable_obj = Countable(count_resource, count_name)
                 self.countable_dict[resource_name] = {
@@ -108,9 +107,17 @@ class StateCounterHelper:
             # Setup the name for use later
             resource_name = full_name + "." + item_to_remove
 
+            modules_index = -1
+            
+            for module in self.json_state["modules"]:
+                i = self.json_state["modules"].index(module)
+                if resource_name in self.json_state["modules"][i]["resources"]:
+                    modules_index = i
+                    
+
             # Check for existance of the item requested, otherwise quit
-            if resource_name in self.json_state["modules"][0]["resources"]:
-                resource_definition = self.json_state["modules"][0]["resources"][resource_name]
+            if modules_index >= 0:
+                resource_definition = self.json_state["modules"][modules_index]["resources"][resource_name]
             else:
                 print "Resource {} does not exist!  Exiting.".format(resource_name)
                 return
@@ -146,13 +153,13 @@ class StateCounterHelper:
                     next_resource_name = full_name + "." + str(item + 1)
 
                     # If there is a next item, save to this item
-                    if next_resource_name in self.json_state["modules"][0]["resources"]:
-                        self.json_state["modules"][0]["resources"][resource_name] = \
-                            self.json_state["modules"][0]["resources"][next_resource_name]
+                    if next_resource_name in self.json_state["modules"][modules_index]["resources"]:
+                        self.json_state["modules"][modules_index]["resources"][resource_name] = \
+                            self.json_state["modules"][modules_index]["resources"][next_resource_name]
 
                     # If there isn't a next item, we're at the end and will delete it.
                     else:
-                        self.json_state["modules"][0]["resources"].pop(resource_name)
+                        self.json_state["modules"][modules_index]["resources"].pop(resource_name)
 
                 # Try to rename the existing state file and save the new state file.
                 try:
